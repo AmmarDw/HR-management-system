@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,55 +22,55 @@ public class Employee {
     @GenericGenerator(name = "native", strategy = "native")
     private Long id;
 
-    @NotBlank
-    @Size(max = 50)
+    @NotBlank(message = "First name is required")
+    @Size(max = 50, message = "First name cannot exceed 50 characters")
     @Column(nullable = false, length = 50)
     private String firstName;
 
-    @Size(max = 50)
+    @Size(max = 50, message = "Middle name cannot exceed 50 characters")
     @Column(length = 50)
     private String middleName;
 
-    @NotBlank
-    @Size(max = 50)
+    @NotBlank(message = "Last name is required")
+    @Size(max = 50, message = "Last name cannot exceed 50 characters")
     @Column(nullable = false, length = 50)
     private String lastName;
 
-    @NotNull
+    @NotNull(message = "Birth date is required")
     @Column(nullable = false)
     private LocalDate birthDate;
 
-    @NotBlank
-    @Email
-    @Size(max = 50)
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
+    @Size(max = 50, message = "Email cannot exceed 50 characters")
     @Column(nullable = false, length = 50, unique = true)
     private String email;
 
-    @Size(max = 20)
+    @Size(max = 20, message = "Mobile phone cannot exceed 20 characters")
     @Column(length = 20)
     private String mobilePhoneNumber;
 
-    @Size(max = 20)
+    @Size(max = 20, message = "Home phone cannot exceed 20 characters")
     @Column(length = 20)
     private String homePhoneNumber;
 
-    @Size(max = 50)
+    @Size(max = 50, message = "Street address cannot exceed 50 characters")
     @Column(length = 50)
     private String streetAddress;
 
-    @Size(max = 20)
+    @Size(max = 20, message = "City cannot exceed 20 characters")
     @Column(length = 20)
     private String city;
 
-    @Size(max = 20)
+    @Size(max = 20, message = "State cannot exceed 20 characters")
     @Column(length = 20)
     private String state;
 
-    @Size(max = 20)
+    @Size(max = 20, message = "Zip code cannot exceed 20 characters")
     @Column(length = 20)
     private String zipCode;
 
-    @Size(max = 20)
+    @Size(max = 20, message = "Country cannot exceed 20 characters")
     @Column(length = 20)
     private String country;
 
