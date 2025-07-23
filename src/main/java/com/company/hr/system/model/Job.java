@@ -1,5 +1,7 @@
 package com.company.hr.system.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -13,6 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Job {
 
     @Id
@@ -20,17 +23,22 @@ public class Job {
     @GenericGenerator(name = "native", strategy = "native")
     private Long id;
 
-    @NotNull
     @ManyToOne
     @JoinColumn(nullable = false)
+    @JsonIgnoreProperties({"parentOrganization", "manager", "description", "jobs", "type"})
     private Organization organization;
 
-    @NotNull
     @ManyToOne
     @JoinColumn(nullable = false)
+    @JsonIgnoreProperties({"jobs", "documents", "middleName", "birthDate", "email",
+            "mobilePhoneNumber", "homePhoneNumber", "streetAddress",
+            "city", "state", "zipCode", "country"})
     private Employee employee;
 
     @ManyToOne
+    @JsonIgnoreProperties({"jobs", "documents", "middleName", "birthDate", "email",
+            "mobilePhoneNumber", "homePhoneNumber", "streetAddress",
+            "city", "state", "zipCode", "country"})
     private Employee manager;
 
     @NotBlank
