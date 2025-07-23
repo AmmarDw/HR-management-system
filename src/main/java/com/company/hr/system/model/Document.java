@@ -1,6 +1,8 @@
 package com.company.hr.system.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -23,32 +25,40 @@ public class Document {
     @GenericGenerator(name = "native", strategy = "native")
     private Long id;
 
-    @NotNull
+    @NotNull(message = "Employee is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
+    @JsonIgnoreProperties({"documents"})
     private Employee employee;
 
-    @NotNull
+    @NotNull(message = "Document type is required")
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private String type;  // e.g., "National ID", "Contract", "Certification"
+    private DocumentTypeEnum type;  // e.g., "National ID", "Contract", "Certification"
 
     // file related fields
+    @NotBlank(message = "File name is required")
+    @Size(max = 255, message = "File name cannot exceed 255 characters")
     @Column(nullable = false, length = 255)
     private String fileName;
 
+    @NotBlank(message = "MIME type is required")
+    @Size(max = 50, message = "MIME type cannot exceed 50 characters")
     @Column(nullable = false, length = 50)
     private String mimeType;  // e.g., "application/pdf", "image/jpeg"
 
+    @NotNull(message = "File content is required")
     @Lob
-    @Column(nullable = false)
+    @Column(columnDefinition = "LONGBLOB", nullable = false)
     private byte[] fileContent;
 
+    @NotNull(message = "File size is required")
     @Column(nullable = false)
     private Long fileSize;  // in bytes
 
 
-    private LocalDate issueDate;
-    private LocalDate expiryDate;
+    private LocalDate issueDate; // used for Contract Start Date
+    private LocalDate expiryDate; // used for Contract End Date
 
     @CreatedDate
     @Column(updatable = false)
@@ -56,8 +66,8 @@ public class Document {
 
 //  Issuing Authority if doc type is National ID
 //  Contract Version if doc type is Contract
-//  Certification Name if doc type is Certification
-    @Size(max = 100)
-    @Column(length = 100)
+//  Certification Name if doc type is Certification & Not Blank
+    @Size(max = 255)
+    @Column(length = 255)
     private String info;
 }

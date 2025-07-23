@@ -1,5 +1,6 @@
 package com.company.hr.system.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -74,9 +75,11 @@ public class Employee {
     @Column(length = 20)
     private String country;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
     private List<Job> jobs = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
     private List<Document> documents = new ArrayList<>();
 
