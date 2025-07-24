@@ -26,8 +26,12 @@ public class Organization {
 
     @ManyToOne
     @JoinColumn(name = "parent_organization_id")
-    @JsonIgnoreProperties({"parentOrganization", "manager", "description", "jobs", "type"})
+    @JsonIgnoreProperties({"manager", "description", "jobs", "type", "childOrganizations"})
     private Organization parentOrganization;
+
+    @OneToMany(mappedBy = "parentOrganization", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"parentOrganization", "description", "jobs", "type"})
+    private List<Organization> childOrganizations = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "manager_id")

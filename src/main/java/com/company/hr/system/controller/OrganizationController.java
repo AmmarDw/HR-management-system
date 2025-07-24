@@ -1,5 +1,6 @@
 package com.company.hr.system.controller;
 
+import com.company.hr.system.dto.OrganizationChartDto;
 import com.company.hr.system.model.Organization;
 import com.company.hr.system.service.OrganizationService;
 import jakarta.validation.Valid;
@@ -8,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/organization")
@@ -26,5 +29,14 @@ public class OrganizationController {
                 organization, parentOrganizationId, managerId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdOrg);
+    }
+
+    @GetMapping("/chart")
+    public ResponseEntity<List<OrganizationChartDto>> getOrganizationChart() {
+        List<Organization> topLevelOrgs = organizationService.findTopLevelOrganizations();
+        List<OrganizationChartDto> chartDtos = topLevelOrgs.stream()
+                .map(organizationService::convertToChartDto)
+                .toList();
+        return ResponseEntity.ok(chartDtos);
     }
 }

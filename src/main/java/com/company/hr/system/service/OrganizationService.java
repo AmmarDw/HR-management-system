@@ -1,5 +1,6 @@
 package com.company.hr.system.service;
 
+import com.company.hr.system.dto.OrganizationChartDto;
 import com.company.hr.system.model.Employee;
 import com.company.hr.system.model.Organization;
 import com.company.hr.system.repository.EmployeeRepository;
@@ -7,6 +8,8 @@ import com.company.hr.system.repository.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -42,5 +45,24 @@ public class OrganizationService {
         }
 
         return organizationRepository.save(organization);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Organization> findTopLevelOrganizations() {
+        return organizationRepository.findByParentOrganizationIsNull();
+    }
+
+    public OrganizationChartDto convertToChartDto(Organization organization) {
+        return OrganizationChartDto.builder()
+                .id(organization.getId())
+                .name(organization.getName())
+                .type(organization.isType() ? "Department" : "Team")
+                .managerName(organization.getManager() != null ?
+                        organization.getManager().getFirstName() + " " + organization.getManager().getLastName() :
+                        null)
+                .childOrganizations(organization.getChildOrganizations().stream()
+                        .map(this::convertToChartDto)
+                        .toList())
+                .build();
     }
 }
