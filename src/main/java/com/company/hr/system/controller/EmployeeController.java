@@ -1,5 +1,6 @@
 package com.company.hr.system.controller;
 
+import com.company.hr.system.dto.OrganizationEmployeeDto;
 import com.company.hr.system.model.Employee;
 import com.company.hr.system.model.Job;
 import com.company.hr.system.service.EmployeeService;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/employee")
@@ -42,5 +45,12 @@ public class EmployeeController {
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(job);
+    }
+
+    @GetMapping("/view")
+    public ResponseEntity<List<OrganizationEmployeeDto>> getOrganizationEmployees(
+            @RequestParam Long organizationId) {
+        List<OrganizationEmployeeDto> employees = employeeService.getEmployeesByOrganization(organizationId);
+        return ResponseEntity.ok(employees);
     }
 }
