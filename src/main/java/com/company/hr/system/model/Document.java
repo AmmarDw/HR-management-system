@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class Document {
 
     @Id
@@ -66,7 +68,7 @@ public class Document {
 
 //  Issuing Authority if doc type is National ID
 //  Contract Version if doc type is Contract
-//  Certification Name if doc type is Certification & Not Blank
+//  Certification Name|Issuing Body if doc type is Certification, Not Blank
     @Size(max = 255)
     @Column(length = 255)
     private String info;

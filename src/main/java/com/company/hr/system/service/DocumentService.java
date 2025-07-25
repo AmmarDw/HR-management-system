@@ -1,5 +1,6 @@
 package com.company.hr.system.service;
 
+import com.company.hr.system.dto.DocumentMetadataDto;
 import com.company.hr.system.dto.DocumentUploadRequest;
 import com.company.hr.system.model.Document;
 import com.company.hr.system.model.DocumentTypeEnum;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -78,5 +80,55 @@ public class DocumentService {
             }
             default -> throw new IllegalArgumentException("Unsupported document type: " + type);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<DocumentMetadataDto> getDocumentMetadataByEmployeeId(Long employeeId) {
+        List<Document> documents = documentRepository.findByEmployeeId(employeeId);
+        return documents.stream()
+                .map(this::convertToMetadataDto)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public DocumentMetadataDto getDocumentMetadataById(Long documentId) {
+        Document document = getDocumentById(documentId);
+        return convertToMetadataDto(document);
+    }
+
+    @Transactional(readOnly = true)
+    public Document getDocumentById(Long documentId) {
+        return documentRepository.findById(Math.toIntExact(documentId))
+                .orElseThrow(() -> new IllegalArgumentException("Document not found"));
+    }
+
+    private DocumentMetadataDto convertToMetadataDto(Document document) {
+        DocumentMetadataDto.DocumentMetadataDtoBuilder builder = DocumentMetadataDto.builder()
+                .id(document.getId())
+                .type(document.getType())
+                .fileName(document.getFileName())
+                .uploadDate(document.getUploadDate());
+
+        if (document.getInfo() != null && !document.getInfo().isEmpty()) {
+            switch (document.getType()) {
+                case NATIONAL_ID:
+                    builder.issuingAuthority(document.getInfo());
+                    break;
+                case CONTRACT:
+                    builder.contractVersion(document.getInfo());
+                    break;
+                case CERTIFICATION:
+                    String[] parts = document.getInfo().split("\\|");
+                    if (parts.length >= 1) {
+                        builder.certificationName(parts[0]);
+                    }
+                    if (parts.length >= 2) {
+                        builder.issuingBody(parts[1]);
+                    }
+                    break;
+            }
+        }
+
+        return builder.build();
     }
 }
