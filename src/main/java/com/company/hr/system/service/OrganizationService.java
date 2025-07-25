@@ -105,4 +105,20 @@ public class OrganizationService {
 
         return organizationRepository.save(existing);
     }
+
+    @Transactional
+    public Organization setOrganizationManager(Long organizationId, Long employeeId) {
+        Organization organization = organizationRepository.findById(Math.toIntExact(organizationId))
+                .orElseThrow(() -> new IllegalArgumentException("Organization not found"));
+
+        if (employeeId == null) {
+            organization.setManager(null);
+        } else {
+            Employee manager = employeeRepository.findById(employeeId)
+                    .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
+            organization.setManager(manager);
+        }
+
+        return organizationRepository.save(organization);
+    }
 }

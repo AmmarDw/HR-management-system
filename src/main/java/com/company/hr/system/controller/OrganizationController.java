@@ -49,4 +49,13 @@ public class OrganizationController {
         Organization updatedOrg = organizationService.updateOrganization(organizationId, updates, newParentOrganizationId);
         return ResponseEntity.ok(updatedOrg);
     }
+
+    @PutMapping("/{organizationId}/set-manager")
+    public ResponseEntity<Organization> setOrganizationManager(
+            @PathVariable Long organizationId,
+            @RequestParam(required = false) Long employeeId) {
+
+        Organization updatedOrg = organizationService.setOrganizationManager(organizationId, employeeId);
+        return ResponseEntity.ok(updatedOrg);
+    }
 }
