@@ -49,7 +49,7 @@ public class Organization {
     private String description;
 
     @NotNull
-    private boolean type; // department=true, team=false
+    private Boolean type; // department=true, team=false
 
     @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"organization", "employee", "manager", "startDate", "endDate"})

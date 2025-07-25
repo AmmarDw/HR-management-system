@@ -39,4 +39,14 @@ public class OrganizationController {
                 .toList();
         return ResponseEntity.ok(chartDtos);
     }
+
+    @PatchMapping("/{organizationId}/update")
+    public ResponseEntity<Organization> updateOrganization(
+            @PathVariable Long organizationId,
+            @RequestParam(required = false) Long newParentOrganizationId,
+            @RequestBody Organization updates) {
+
+        Organization updatedOrg = organizationService.updateOrganization(organizationId, updates, newParentOrganizationId);
+        return ResponseEntity.ok(updatedOrg);
+    }
 }

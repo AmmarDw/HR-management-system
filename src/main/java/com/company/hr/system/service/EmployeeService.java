@@ -60,4 +60,39 @@ public class EmployeeService {
                         employee.getMobilePhoneNumber() : employee.getHomePhoneNumber())
                 .build();
     }
+
+    @Transactional
+    public Employee updateEmployee(Long employeeId, Employee updates) {
+        Employee existing = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
+
+        // Protect immutable fields
+        updates.setId(existing.getId()); // Block ID changes
+        updates.setJobs(existing.getJobs()); // Protect job history
+        updates.setDocuments(existing.getDocuments()); // Protect documents
+
+        // Validate email uniqueness if changed
+        if (!existing.getEmail().equals(updates.getEmail())) {
+            if (employeeRepository.existsByEmail(updates.getEmail())) {
+                throw new IllegalArgumentException("Email already exists");
+            }
+        }
+
+        // Copy non-null fields only
+        if (updates.getFirstName() != null) existing.setFirstName(updates.getFirstName());
+        if (updates.getLastName() != null) existing.setLastName(updates.getLastName());
+        if (updates.getBirthDate() != null) existing.setBirthDate(updates.getBirthDate());
+        if (updates.getEmail() != null) existing.setEmail(updates.getEmail());
+
+        // Optional fields
+        if (updates.getMiddleName() != null) existing.setMiddleName(updates.getMiddleName());
+        if (updates.getMobilePhoneNumber() != null) existing.setMobilePhoneNumber(updates.getMobilePhoneNumber());
+        if (updates.getHomePhoneNumber() != null) existing.setHomePhoneNumber(updates.getHomePhoneNumber());
+        if (updates.getStreetAddress() != null) existing.setStreetAddress(updates.getStreetAddress());
+        if (updates.getCity() != null) existing.setCity(updates.getCity());
+        if (updates.getState() != null) existing.setState(updates.getState());
+        if (updates.getZipCode() != null) existing.setZipCode(updates.getCountry());
+
+        return employeeRepository.save(existing);
+    }
 }

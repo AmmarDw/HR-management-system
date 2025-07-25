@@ -53,4 +53,13 @@ public class EmployeeController {
         List<OrganizationEmployeeDto> employees = employeeService.getEmployeesByOrganization(organizationId);
         return ResponseEntity.ok(employees);
     }
+
+    @PatchMapping("/{employeeId}/update")
+    public ResponseEntity<Employee> updateEmployee(
+            @PathVariable Long employeeId,
+            @RequestBody Employee updatedEmployee) {
+
+        Employee savedEmployee = employeeService.updateEmployee(employeeId, updatedEmployee);
+        return ResponseEntity.ok(savedEmployee);
+    }
 }

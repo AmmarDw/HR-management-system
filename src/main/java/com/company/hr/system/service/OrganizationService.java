@@ -56,7 +56,7 @@ public class OrganizationService {
         return OrganizationChartDto.builder()
                 .id(organization.getId())
                 .name(organization.getName())
-                .type(organization.isType() ? "Department" : "Team")
+                .type(organization.getType() ? "Department" : "Team")
                 .managerName(organization.getManager() != null ?
                         organization.getManager().getFirstName() + " " + organization.getManager().getLastName() :
                         null)
@@ -64,5 +64,45 @@ public class OrganizationService {
                         .map(this::convertToChartDto)
                         .toList())
                 .build();
+    }
+
+    @Transactional
+    public Organization updateOrganization(Long organizationId, Organization updates, Long newParentOrganizationId) {
+        Organization existing = organizationRepository.findById(Math.toIntExact(organizationId))
+                .orElseThrow(() -> new IllegalArgumentException("Organization not found"));
+
+        // Protect immutable fields
+        updates.setId(existing.getId());
+        updates.setChildOrganizations(existing.getChildOrganizations());
+        updates.setJobs(existing.getJobs());
+        updates.setManager(existing.getManager()); // Manager has separate endpoint
+
+        // Validate and update name
+        if (updates.getName() != null && !updates.getName().isBlank()) {
+            if (!existing.getName().equals(updates.getName()) &&
+                    organizationRepository.existsByName(updates.getName())) {
+                throw new IllegalArgumentException("Organization name already exists");
+            }
+            existing.setName(updates.getName());
+        }
+
+        // Validate and update parent organization if provided
+        if (newParentOrganizationId != null) {
+            Organization newParentOrganization = organizationRepository.findById(Math.toIntExact(newParentOrganizationId))
+                    .orElseThrow(() -> new IllegalArgumentException("New parent organization not found"));
+            existing.setParentOrganization(newParentOrganization);
+        }
+
+        // Update description if provided
+        if (updates.getDescription() != null) {
+            existing.setDescription(updates.getDescription());
+        }
+
+        // Update type if provided
+        if (updates.getType() != null) {
+            existing.setType(updates.getType());
+        }
+
+        return organizationRepository.save(existing);
     }
 }
