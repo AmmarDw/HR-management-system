@@ -121,4 +121,25 @@ public class OrganizationService {
 
         return organizationRepository.save(organization);
     }
+
+    @Transactional
+    public void deleteOrganization(Long organizationId) {
+        Organization organization = organizationRepository.findById(Math.toIntExact(organizationId))
+                .orElseThrow(() -> new IllegalArgumentException("Organization not found"));
+
+        // Check for active employees
+        boolean hasActiveEmployees = organization.getJobs().stream()
+                .anyMatch(job -> job.getEndDate() == null);
+
+        if (hasActiveEmployees) {
+            throw new IllegalStateException("Cannot delete organization with active employees");
+        }
+
+        // Check for child organizations
+        if (!organization.getChildOrganizations().isEmpty()) {
+            throw new IllegalStateException("Cannot delete organization with child organizations");
+        }
+
+        organizationRepository.delete(organization);
+    }
 }

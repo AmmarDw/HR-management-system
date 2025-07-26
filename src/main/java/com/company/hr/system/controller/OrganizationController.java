@@ -58,4 +58,10 @@ public class OrganizationController {
         Organization updatedOrg = organizationService.setOrganizationManager(organizationId, employeeId);
         return ResponseEntity.ok(updatedOrg);
     }
+
+    @DeleteMapping("/{organizationId}/delete")
+    public ResponseEntity<Void> deleteOrganization(@PathVariable Long organizationId) {
+        organizationService.deleteOrganization(organizationId);
+        return ResponseEntity.noContent().build();
+    }
 }
